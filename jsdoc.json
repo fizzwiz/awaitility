@@ -1,0 +1,25 @@
+{
+    "source": {
+        "include": ["./src/main"]
+    },
+    
+    "opts": {
+        "destination": "./docs",
+        "readme": "./README.md"
+    },
+
+    "templates": {
+        "default": {
+            "outputSourceFiles": false
+        },
+
+        "cleverLinks": true  
+    },
+
+    "plugins": ["plugins/markdown"],
+
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc", "closure"]
+    }    
+}
