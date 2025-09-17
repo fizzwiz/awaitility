@@ -51,13 +51,13 @@ export class HttpRequestHandler extends Handler {
      * After this call, `req.body` will be set.
      * @returns {Promise<HttpRequestHandler>}
      */
-    async prepareBody() {
+    async prepareBody(error = { message: 'prepare-body-fail', code: 422 }, onError = this.defaultOnError) {
         return this.asyncCheck(
         async ({ req }) => {
             return await Req.prepareBody(req);
         },
-        { message: 'body-prepare', code: 422 },
-        this.defaultOnError
+        error,
+        onError
         );
     }
   
@@ -66,14 +66,14 @@ export class HttpRequestHandler extends Handler {
    * After this call, `req.query` will be set.
    * @returns {HttpRequestHandler}
    */
-  prepareQuery() {
+  prepareQuery(error = { message: 'prepare-query-fail', code: 422 }, onError = this.defaultOnError) {
     return this.check(
       ({ req }) => {
         Req.prepareQuery(req);
         return true;
       },
-      { message: 'query-prepare', code: 422 },
-      this.defaultOnError
+      error, 
+      onError
     );
   }
   
@@ -82,14 +82,14 @@ export class HttpRequestHandler extends Handler {
    * After this call, `req.cookies` will be set.
    * @returns {HttpRequestHandler}
    */
-  prepareCookies() {
+  prepareCookies(error = { message: 'prepare-cookies-fail', code: 422 }, onError = this.defaultOnError) {
     return this.check(
       ({ req }) => {
         Req.prepareCookies(req);
         return true;
       },
-      { message: 'cookies-prepare', code: 422 },
-      this.defaultOnError
+      error,
+      onError
     );
   }
   
@@ -102,11 +102,11 @@ export class HttpRequestHandler extends Handler {
    * @param {string} [tokenNames.query='token']
    * @returns {HttpRequestHandler}
    */
-  prepareToken(tokenNames = { cookie: 'token', header: 'Authorization', query: 'token' }) {
+  prepareToken(tokenNames = { cookie: 'token', header: 'Authorization', query: 'token' }, error = { message: 'token-prepare-fail', code: 401 }, onError = this.defaultOnError) {
     return this.check(
       ({ req }) => Req.prepareToken(req, tokenNames),
-      { message: 'token-parse', code: 401 },
-      this.defaultOnError
+      error,
+      onError
     );
   }
 

@@ -76,8 +76,9 @@ const handler = new HttpRequestHandler({ req, res });
 handler
   .with('req')
   .check(req => req.url === "/api/users")
-  .prepareToken({ message: "token-fail" })
-  .on("token-fail", ...);
+  .prepareToken()
+  .on("check-fail", ...)
+  .on("prepare-token-fail", ...);
 ```
 
 ---
