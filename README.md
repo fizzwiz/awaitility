@@ -13,12 +13,12 @@ It simplifies **asynchronous operations**, **nested context navigation**, and **
 
 ## ⚡ Features
 
-* **Handler**: Base class for chainable operations with synchronous and asynchronous checks.
-* **DomHandler**: Chainable DOM navigation and async mutation.
-* **HttpRequestHandler**: Simplified HTTP request/response handling.
-* **Async**: Utilities for asynchronous workflows.
-* **Req / Res**: Minimal request and response utilities.
-* **Path**: Utilities for working with nested objects or URLs.
+* 🛠 **Handler**: Base class for chainable operations with synchronous and asynchronous checks.
+* 🌳 **DomHandler**: Chainable DOM navigation and async mutation.
+* 📡 **HttpRequestHandler**: Simplified HTTP request/response handling.
+* ⏱ **Async**: Utilities for asynchronous workflows.
+* 📨 **Req / Res**: Minimal request and response utilities.
+* 🗂 **Path**: Utilities for working with nested objects or URLs.
 
 ---
 
@@ -32,60 +32,62 @@ npm install @fizzwiz/awaitility
 
 ## 🚀 Usage
 
-### Handler
+### 🛠 Handler
 
 ```js
 import { Handler } from "@fizzwiz/awaitility";
 
 const data = { user: { name: "Alice" } };
 const defaultError = { message: "handler-fail" };
-const handler = new Handler(data, defaultError);
 
-handler
-  .with("user")
-  .check(ctx => ctx.name === "Alice", { message: "wrong-name" })
-  .set("age", 30)
+const handler = new Handler(data, defaultError)
   .on('handler-fail', ...)
   .on('handler-fail:wrong-name', ...);
+  .with("user")
+  .check(ctx => ctx.name === "Alice", { message: "wrong-name" })  // Passes a specific error object as the second argument
+  .set("age", 30)
+  
 
 console.log('✅ Context:', handler.ctx); // { name: "Alice", age: 30 }
 ```
 
-### DomHandler
+### 🌳 DomHandler
 
 ```js
 import { DomHandler } from "@fizzwiz/awaitility";
 
-const handler = new DomHandler(document);
-
-await handler
+const handler = new DomHandler(document)
+  .on('fetch-html-fail', ...);
   .withQuery("#container > span.item")
-  .setAttr("data-id", "123")
-  .asyncSetHTML(async () => fetch(url).then(res => res.text()), { message: 'fetch-html-fail' });
+  .setAttr("data-id", "123");
 
-handler.on('fetch-html-fail', ...);
+await handler.asyncSetHTML(
+    async () => fetch(url).then(res => res.text()), 
+    { message: 'fetch-html-fail' }
+);
 ```
 
-### HttpRequestHandler
+### 📡 HttpRequestHandler
 
 ```js
 import { HttpRequestHandler } from "@fizzwiz/awaitility";
 
 const handler = new HttpRequestHandler({ req, res });
 
-handler
-  .with('req')
-  .check(req => req.url === "/api/users")
-  .prepareToken()
+handler  
   .on("check-fail", ...)
   .on("prepare-token-fail", ...);
+  .with('req')
+.check(req => req.url === "/api/users")   // Second argument defaults to the error { message: "check-fail" }
+.prepareToken()                           // Second argument defaults to the error { message: "prepare-token-fail" }
+
 ```
 
 ---
 
 ## 📚 API Reference
 
-### Handler
+### 🛠 Handler
 
 * `with(path, error?, onError?, creating?)` - Navigate into a nested object.
 * `without(nsteps?)` - Step back in the path stack.
@@ -98,7 +100,7 @@ handler
 * `asyncExec(fn, error?, onError?)` - Asynchronous side-effect function.
 * `fail(err, cause?, onError?)` - Fail handler and emit enriched error.
 
-### DomHandler
+### 🌳 DomHandler
 
 * Extends `Handler`.
 * `withQuery(selector, error?, onError?)` - Navigate DOM element by CSS selector.
@@ -107,7 +109,7 @@ handler
 * `setAttr(attr, value, error?, onError?)` - Set attribute.
 * Async equivalents: `asyncSetText`, `asyncSetHTML`, `asyncSetAttr`.
 
-### HttpRequestHandler
+### 📡 HttpRequestHandler
 
 * `prepareBody()`, `prepareQuery()`, `prepareToken()`, `checkMethod()`, `checkToken()`, `checkQueryParam()`, `checkCookie()`, `checkHeader()`, `checkContentType()`, `checkAccept()`
 * By default, errors are converted into a `Notification` instance sent automatically to the client.
