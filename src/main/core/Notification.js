@@ -44,4 +44,28 @@ export class Notification {
         this.emitter = emitter;
         this.source = source;
     }
+    
+    /**
+     * Creates a Notification from an Error or Handler enriched error.
+     * Strips non-serializable parts (like emitter) and keeps useful fields.
+     *
+     * @param {Error|object} error - The error object.
+     * @returns {Notification} Serializable notification instance.
+     */
+    static fromError(error) {
+        const msg = error.message || "Unknown error";
+        const payload = { ...error };
+        
+        // Remove emitter to avoid circular or non-serializable references
+        delete payload.emitter;
+    
+        // Preserve code if available
+        if (error.code) payload.code = error.code;
+    
+        // Preserve original source if present
+        const source = error.source ? Notification.fromError(error.source) : undefined;
+    
+        return new Notification(msg, payload, undefined, source);
+    }
+    
 }

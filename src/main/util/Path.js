@@ -145,4 +145,34 @@ static route(app, method, path, handler) {
   throw new Error('Unsupported application framework');
 }
 
+  /**
+   * Ensures that a nested path exists on the given object.
+   * If missing, intermediate objects are created.
+   *
+   * @param {object} obj - The root object.
+   * @param {Array<string>} keys - Nested property names.
+   * @returns {object} The final nested object reference.
+   */
+  static get(obj, keys, creating = false) {
+    let current = obj;
+    for (const key of keys) {
+      if (current[key] === undefined && creating) {
+        current[key] = {};
+      } 
+      current = current[key];
+    }
+    return current;
   }
+
+  static set(obj, keys, value) {
+    const nested = Path.get(obj, keys.slice(0, -1), true);
+    nested[keys[keys.length - 1]] = value;
+  }
+
+  static keys(stringOrArray) {
+    return !stringOrArray? []
+      : Array.isArray(stringOrArray)? stringOrArray
+      : stringOrArray.split('.').filter(Boolean);
+  }
+
+}

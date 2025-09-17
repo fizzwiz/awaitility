@@ -1,4 +1,4 @@
-import { Notification } from "./Notification.js";
+import { Notification } from "../core/Notification.js";
 
 /** utility methods */
 export class Async {
