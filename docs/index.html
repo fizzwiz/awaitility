@@ -55,8 +55,8 @@ It simplifies <strong>asynchronous operations</strong>, <strong>nested context n
 <h2>⚡ Features</h2>
 <ul>
 <li>🛠 <strong>Handler</strong>: Base class for chainable operations with synchronous and asynchronous checks.</li>
-<li>🌳 <strong>DomHandler</strong>: Chainable DOM navigation and async mutation.</li>
-<li>📡 <strong>HttpRequestHandler</strong>: Simplified HTTP request/response handling.</li>
+<li>🌳 <strong>Domler</strong>: Chainable DOM navigation and async mutation.</li>
+<li>📡 <strong>Servler</strong>: Simplified HTTP request/response handling.</li>
 <li>⏱ <strong>Async</strong>: Utilities for asynchronous workflows.</li>
 <li>📨 <strong>Req / Res</strong>: Minimal request and response utilities.</li>
 <li>🗂 <strong>Path</strong>: Utilities for working with nested objects or URLs.</li>
@@ -83,12 +83,12 @@ const handler = new Handler(data, defaultError)
 
 console.log('✅ Context:', handler.ctx); // { name: &quot;Alice&quot;, age: 30 }
 </code></pre>
-<h3>🌳 DomHandler</h3>
-<pre class="prettyprint source lang-js"><code>import { DomHandler } from &quot;@fizzwiz/awaitility&quot;;
+<h3>🌳 Domler</h3>
+<pre class="prettyprint source lang-js"><code>import { Domler } from &quot;@fizzwiz/awaitility&quot;;
 
-const handler = new DomHandler(document)
+const handler = new Domler(document)
   .on('fetch-html-fail', ...);
-  .withQuery(&quot;#container > span.item&quot;)
+  .withQuery(&quot;#container&quot;)
   .setAttr(&quot;data-id&quot;, &quot;123&quot;);
 
 await handler.asyncSetHTML(
@@ -96,17 +96,15 @@ await handler.asyncSetHTML(
     { message: 'fetch-html-fail' }
 );
 </code></pre>
-<h3>📡 HttpRequestHandler</h3>
-<pre class="prettyprint source lang-js"><code>import { HttpRequestHandler } from &quot;@fizzwiz/awaitility&quot;;
+<h3>📡 Servler</h3>
+<pre class="prettyprint source lang-js"><code>import { Servler } from &quot;@fizzwiz/awaitility&quot;;
 
-const handler = new HttpRequestHandler({ req, res });
-
-handler  
+const handler = new Servler({ req, res })
   .on(&quot;check-fail&quot;, ...)
   .on(&quot;prepare-token-fail&quot;, ...);
   .with('req')
-.check(req => req.url === &quot;/api/users&quot;)   // Second argument defaults to the error { message: &quot;check-fail&quot; }
-.prepareToken()                           // Second argument defaults to the error { message: &quot;prepare-token-fail&quot; }
+  .check(req => req.url === &quot;/api/user&quot;)   // Second argument defaults to the error { message: &quot;check-fail&quot; }
+  .prepareToken()                           // Second argument defaults to the error { message: &quot;prepare-token-fail&quot; }
 
 </code></pre>
 <hr>
@@ -124,7 +122,7 @@ handler
 <li><code>asyncExec(fn, error?, onError?)</code> - Asynchronous side-effect function.</li>
 <li><code>fail(err, cause?, onError?)</code> - Fail handler and emit enriched error.</li>
 </ul>
-<h3>🌳 DomHandler</h3>
+<h3>🌳 Domler</h3>
 <ul>
 <li>Extends <code>Handler</code>.</li>
 <li><code>withQuery(selector, error?, onError?)</code> - Navigate DOM element by CSS selector.</li>
@@ -133,7 +131,7 @@ handler
 <li><code>setAttr(attr, value, error?, onError?)</code> - Set attribute.</li>
 <li>Async equivalents: <code>asyncSetText</code>, <code>asyncSetHTML</code>, <code>asyncSetAttr</code>.</li>
 </ul>
-<h3>📡 HttpRequestHandler</h3>
+<h3>📡 Servler</h3>
 <ul>
 <li><code>prepareBody()</code>, <code>prepareQuery()</code>, <code>prepareToken()</code>, <code>checkMethod()</code>, <code>checkToken()</code>, <code>checkQueryParam()</code>, <code>checkCookie()</code>, <code>checkHeader()</code>, <code>checkContentType()</code>, <code>checkAccept()</code></li>
 <li>By default, errors are converted into a <code>Notification</code> instance sent automatically to the client.</li>
@@ -158,13 +156,13 @@ Please open issues or pull requests on the <a href="https://github.com/fizzwiz/a
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-core.html">core</a></li><li><a href="module-handler.html">handler</a></li><li><a href="module-util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="Async.html">Async</a></li><li><a href="DomHandler.html">DomHandler</a></li><li><a href="Handler.html">Handler</a></li><li><a href="HttpRequestHandler.html">HttpRequestHandler</a></li><li><a href="Notification.html">Notification</a></li><li><a href="Path.html">Path</a></li><li><a href="Req.html">Req</a></li><li><a href="Res.html">Res</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-core.html">core</a></li><li><a href="module-handler.html">handler</a></li><li><a href="module-util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="Async.html">Async</a></li><li><a href="Domler.html">Domler</a></li><li><a href="Handler.html">Handler</a></li><li><a href="Notification.html">Notification</a></li><li><a href="Path.html">Path</a></li><li><a href="Req.html">Req</a></li><li><a href="Res.html">Res</a></li><li><a href="Servler.html">Servler</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Sep 17 2025 20:43:49 GMT+0200 (Ora legale dell’Europa centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 18 2025 06:54:44 GMT+0200 (Ora legale dell’Europa centrale)
 </footer>
 
 <script> prettyPrint(); </script>

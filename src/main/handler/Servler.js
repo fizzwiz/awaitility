@@ -4,7 +4,7 @@ import { Res } from "../util/Res.js";
 import { Notification } from "../core/Notification.js";
 
 /**
- * HttpRequestHandler
+ * Servler
  * ------------------
  * Chainable handler for HTTP requests.
  * 
@@ -20,13 +20,13 @@ import { Notification } from "../core/Notification.js";
  * Error handling is automatic via a default or custom `onError` callback.
  */
 
-export class HttpRequestHandler extends Handler {
+export class Servler extends Handler {
 
   constructor(ctx) {
     super(
       ctx,
       { message: "handler-fail" },
-      HttpRequestHandler.defaultOnError
+      Servler.defaultOnError
     );
   }
 
@@ -49,7 +49,7 @@ export class HttpRequestHandler extends Handler {
     /**
      * Parses and attaches the request body (async).
      * After this call, `req.body` will be set.
-     * @returns {Promise<HttpRequestHandler>}
+     * @returns {Promise<Servler>}
      */
     async prepareBody(error = { message: 'prepare-body-fail', code: 422 }, onError = this.defaultOnError) {
         return this.asyncCheck(
@@ -64,7 +64,7 @@ export class HttpRequestHandler extends Handler {
   /**
    * Parses and attaches query parameters (sync).
    * After this call, `req.query` will be set.
-   * @returns {HttpRequestHandler}
+   * @returns {Servler}
    */
   prepareQuery(error = { message: 'prepare-query-fail', code: 422 }, onError = this.defaultOnError) {
     return this.check(
@@ -80,7 +80,7 @@ export class HttpRequestHandler extends Handler {
   /**
    * Parses and attaches cookies (sync).
    * After this call, `req.cookies` will be set.
-   * @returns {HttpRequestHandler}
+   * @returns {Servler}
    */
   prepareCookies(error = { message: 'prepare-cookies-fail', code: 422 }, onError = this.defaultOnError) {
     return this.check(
@@ -100,7 +100,7 @@ export class HttpRequestHandler extends Handler {
    * @param {string} [tokenNames.cookie='token']
    * @param {string} [tokenNames.header='Authorization']
    * @param {string} [tokenNames.query='token']
-   * @returns {HttpRequestHandler}
+   * @returns {Servler}
    */
   prepareToken(tokenNames = { cookie: 'token', header: 'Authorization', query: 'token' }, error = { message: 'token-prepare-fail', code: 401 }, onError = this.defaultOnError) {
     return this.check(

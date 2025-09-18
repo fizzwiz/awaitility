@@ -1,5 +1,5 @@
 import { strict as assert } from 'assert';
-import { HttpRequestHandler } from '../../main/handler/HttpRequestHandler.js';
+import { Servler } from '../../main/handler/Servler.js';
 
 // Mock Req and Res utils
 const mockReq = (overrides = {}) => ({
@@ -26,7 +26,7 @@ describe('HttpRequestHandler', () => {
   it('should parse body asynchronously', async () => {
     const req = mockReq({ body: { foo: 'bar' } });
     const res = mockRes();
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
 
     await handler.prepareBody();
     assert.deepEqual(req.body, { foo: 'bar' });
@@ -36,7 +36,7 @@ describe('HttpRequestHandler', () => {
   it('should parse query and cookies synchronously', () => {
     const req = mockReq({ query: { id: '42' }, cookies: { token: 'abc' } });
     const res = mockRes();
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
 
     handler.defaultOnError = handler.constructor.defaultOnError;
 
@@ -49,7 +49,7 @@ describe('HttpRequestHandler', () => {
   it('should check method successfully', () => {
     const req = mockReq({ method: 'GET' });
     const res = mockRes();
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
 
     handler.checkMethod('GET', 'POST');
     assert.ok(handler.ok);
@@ -60,7 +60,7 @@ describe('HttpRequestHandler', () => {
     const res = mockRes();
     let captured;
 
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
     handler.defaultOnError = (err) => { captured = err; };
 
     handler.checkMethod('GET', 'POST');
@@ -72,7 +72,7 @@ describe('HttpRequestHandler', () => {
   it('should validate token', () => {
     const req = mockReq({ token: 'Bearer 123' });
     const res = mockRes();
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
 
     handler.checkToken(token => token === 'Bearer 123');
     assert.ok(handler.ok);
@@ -83,7 +83,7 @@ describe('HttpRequestHandler', () => {
     const res = mockRes();
     let captured;
 
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
     handler.defaultOnError = (err) => { captured = err; };
 
     handler.checkToken(token => token === 'Bearer 123');
@@ -95,7 +95,7 @@ describe('HttpRequestHandler', () => {
   it('should check query param', () => {
     const req = mockReq({ query: { id: '42' } });
     const res = mockRes();
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
 
     handler.checkQueryParam('id', val => val === '42');
     assert.ok(handler.ok);
@@ -106,7 +106,7 @@ describe('HttpRequestHandler', () => {
     const res = mockRes();
     let captured;
 
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
     handler.defaultOnError = (err) => { captured = err; };
 
     handler.checkQueryParam('id', Boolean);
@@ -118,7 +118,7 @@ describe('HttpRequestHandler', () => {
   it('should chain multiple checks', () => {
     const req = mockReq({ body: { foo: 1 }, query: { id: 'x' }, cookies: { token: 'abc' }, method: 'POST', token: 'xyz' });
     const res = mockRes();
-    const handler = new HttpRequestHandler({ req, res });
+    const handler = new Servler({ req, res });
 
     handler
       .checkMethod('POST')

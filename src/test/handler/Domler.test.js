@@ -1,8 +1,8 @@
 import { JSDOM } from "jsdom";
 import assert from "assert";
-import { DomHandler } from "../../main/handler/DomHandler.js";
+import { Domler } from "../../main/handler/Domler.js";
 
-describe("DomHandler", function () {
+describe("Domler", function () {
   let dom;
   let container;
   let handler;
@@ -16,7 +16,7 @@ describe("DomHandler", function () {
       </div>
     `);
     container = dom.window.document.getElementById("root");
-    handler = new DomHandler(container);
+    handler = new Domler(container);
   });
 
   it("withQuery navigates to child element", function () {
@@ -58,7 +58,7 @@ describe("DomHandler", function () {
   it("handles errors gracefully with asyncExec", async function () {
     let errorCalled = false;
     const onError = () => { errorCalled = true; };
-    const h = new DomHandler(container, { message: "fail" }, onError);
+    const h = new Domler(container, { message: "fail" }, onError);
 
     await h.withQuery("#nonexistent").asyncSetText("test");
     assert.strictEqual(h.ok, false);

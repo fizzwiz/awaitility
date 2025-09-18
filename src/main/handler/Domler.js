@@ -1,12 +1,12 @@
 import { Handler } from "../core/Handler.js";
 
 /**
- * DomHandler
+ * Domler
  * ----------
  * Chainable handler for DOM navigation, validation, and mutation.
  * The `ctx` is always a Node (Document, Element, etc.).
  */
-export class DomHandler extends Handler {
+export class Domler extends Handler {
   constructor(ctx, error, onError) {
     super(ctx, error ?? { message: "dom-handler-fail" }, onError);
   }
@@ -21,7 +21,7 @@ export class DomHandler extends Handler {
      * just as with property-based navigation.
      *
      * @param {string} selector CSS selector.
-     * @returns {DomHandler} this
+     * @returns {Domler} this
      *
      * @example
      * // CSS selector navigation:

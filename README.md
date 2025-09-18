@@ -14,8 +14,8 @@ It simplifies **asynchronous operations**, **nested context navigation**, and **
 ## ⚡ Features
 
 * 🛠 **Handler**: Base class for chainable operations with synchronous and asynchronous checks.
-* 🌳 **DomHandler**: Chainable DOM navigation and async mutation.
-* 📡 **HttpRequestHandler**: Simplified HTTP request/response handling.
+* 🌳 **Domler**: Chainable DOM navigation and async mutation.
+* 📡 **Servler**: Simplified HTTP request/response handling.
 * ⏱ **Async**: Utilities for asynchronous workflows.
 * 📨 **Req / Res**: Minimal request and response utilities.
 * 🗂 **Path**: Utilities for working with nested objects or URLs.
@@ -51,14 +51,14 @@ const handler = new Handler(data, defaultError)
 console.log('✅ Context:', handler.ctx); // { name: "Alice", age: 30 }
 ```
 
-### 🌳 DomHandler
+### 🌳 Domler
 
 ```js
-import { DomHandler } from "@fizzwiz/awaitility";
+import { Domler } from "@fizzwiz/awaitility";
 
-const handler = new DomHandler(document)
+const handler = new Domler(document)
   .on('fetch-html-fail', ...);
-  .withQuery("#container > span.item")
+  .withQuery("#container")
   .setAttr("data-id", "123");
 
 await handler.asyncSetHTML(
@@ -67,19 +67,17 @@ await handler.asyncSetHTML(
 );
 ```
 
-### 📡 HttpRequestHandler
+### 📡 Servler
 
 ```js
-import { HttpRequestHandler } from "@fizzwiz/awaitility";
+import { Servler } from "@fizzwiz/awaitility";
 
-const handler = new HttpRequestHandler({ req, res });
-
-handler  
+const handler = new Servler({ req, res })
   .on("check-fail", ...)
   .on("prepare-token-fail", ...);
   .with('req')
-.check(req => req.url === "/api/users")   // Second argument defaults to the error { message: "check-fail" }
-.prepareToken()                           // Second argument defaults to the error { message: "prepare-token-fail" }
+  .check(req => req.url === "/api/user")   // Second argument defaults to the error { message: "check-fail" }
+  .prepareToken()                           // Second argument defaults to the error { message: "prepare-token-fail" }
 
 ```
 
@@ -100,7 +98,7 @@ handler
 * `asyncExec(fn, error?, onError?)` - Asynchronous side-effect function.
 * `fail(err, cause?, onError?)` - Fail handler and emit enriched error.
 
-### 🌳 DomHandler
+### 🌳 Domler
 
 * Extends `Handler`.
 * `withQuery(selector, error?, onError?)` - Navigate DOM element by CSS selector.
@@ -109,7 +107,7 @@ handler
 * `setAttr(attr, value, error?, onError?)` - Set attribute.
 * Async equivalents: `asyncSetText`, `asyncSetHTML`, `asyncSetAttr`.
 
-### 📡 HttpRequestHandler
+### 📡 Servler
 
 * `prepareBody()`, `prepareQuery()`, `prepareToken()`, `checkMethod()`, `checkToken()`, `checkQueryParam()`, `checkCookie()`, `checkHeader()`, `checkContentType()`, `checkAccept()`
 * By default, errors are converted into a `Notification` instance sent automatically to the client.

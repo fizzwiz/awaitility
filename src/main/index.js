@@ -1,13 +1,13 @@
 import { Handler } from "./core/Handler.js";
 import { Notification } from "./core/Notification.js";
-import { HttpRequestHandler } from "./handler/HttpRequestHandler.js";
-import { DomHandler } from "./handler/DomHandler.js";
+import { Servler } from "./handler/Servler.js";
+import { Domler } from "./handler/Domler.js";
 import { Async } from "./util/Async.js";
 import { Path } from "./util/Path.js";
 import { Req } from "./util/Req.js";
 import { Res } from "./util/Res.js";
 
-export {Handler, Notification, HttpRequestHandler, DomHandler, Async, Path, Req, Res};
+export {Handler, Notification, Servler as HttpRequestHandler, Domler as DomHandler, Async, Path, Req, Res};
 
 /**
  * Core classes
@@ -20,8 +20,8 @@ export {Handler, Notification, HttpRequestHandler, DomHandler, Async, Path, Req,
 /**
  * Handlers
  * 
- * - {@link HttpRequestHandler} 
- * - {@link DomHandler} 
+ * - {@link Servler} 
+ * - {@link Domler} 
  * @module handler
  */
 /**
