@@ -41,43 +41,78 @@ const data = { user: { name: "Alice" } };
 const defaultError = { message: "handler-fail" };
 
 const handler = new Handler(data, defaultError)
-  .on('handler-fail', ...)
-  .on('handler-fail:wrong-name', ...);
+  .on("handler-fail", err => /* handle general failure */)
+  .on("handler-fail:wrong-name", err => /* handle specific failure */)
   .with("user")
-  .check(ctx => ctx.name === "Alice", { message: "wrong-name" })  // Passes a specific error object as the second argument
-  .set("age", 30)
-  
+  .check(ctx => ctx.name === "Alice", { message: "wrong-name" })  // Second argument = error thrown if the predicate fails
+  .set("age", 30);
 
-console.log('✅ Context:', handler.ctx); // { name: "Alice", age: 30 }
+// Errors are handled by listeners
+if (!handler.ok) return;
+
+// Business logic in focus here
+console.log("✅ Context:", handler.ctx); // { name: "Alice", age: 30 }
+
 ```
+
+---
 
 ### 🌳 Domler
 
-```js
-import { Domler } from "@fizzwiz/awaitility";
+```html
+<script type="module">
+  import { Domler } from "@fizzwiz/awaitility";
 
-const handler = new Domler(document)
-  .on('fetch-html-fail', ...);
-  .withQuery("#container")
-  .setAttr("data-id", "123");
+  async function handler(event) {
+    const h = new Domler(document)
+      .on("fetch-html-fail", err => /* handle fetch failure */)
+      .withQuery("#container")
+      .setAttr("data-id", "123");
 
-await handler.asyncSetHTML(
-    async () => fetch(url).then(res => res.text()), 
-    { message: 'fetch-html-fail' }
-);
+    await h.asyncSetHTML(
+      async () => fetch("/snippet.html").then(res => res.text()),
+      { message: "fetch-html-fail" }
+    );
+
+    // Errors are handled by listeners
+    if (!h.ok) return;
+
+    // Business logic in focus here
+  }
+</script>
+
 ```
+
+---
 
 ### 📡 Servler
 
 ```js
-import { Servler } from "@fizzwiz/awaitility";
+import { Servler, Res } from "@fizzwiz/awaitility";
 
-const handler = new Servler({ req, res })
-  .on("check-fail", ...)
-  .on("prepare-token-fail", ...);
-  .with('req')
-  .check(req => req.url === "/api/user")   // Second argument defaults to the error { message: "check-fail" }
-  .prepareToken()                           // Second argument defaults to the error { message: "prepare-token-fail" }
+// Example: a framework-agnostic route handler
+async function handler(req, res) {
+  const h = new Servler({ req, res });
+
+  h
+    .checkMethod("POST")
+    .checkContentType(/application\/json/)   // Require JSON body
+    .checkAccept(/application\/json/)       // Client must accept JSON
+    .prepareQuery()                         // Attach req.query if missing
+    .prepareCookies();                      // Attach req.cookies if missing
+
+  // Attach req.body (async operation) if missing
+  await h.prepareBody();   
+
+  // Errors are auto-converted to Notifications and sent to the client
+  if (!h.ok) return; 
+
+  // Business logic in focus here
+  const result = { success: true };
+
+  // Send JSON response
+  Res.json(res, 200, result);
+}
 
 ```
 
