@@ -9,6 +9,8 @@
 `@fizzwiz/awaitility` provides a set of **chainable, context-aware handlers** for general data structures, DOM manipulation, and HTTP workflows.
 It simplifies **asynchronous operations**, **nested context navigation**, and **error handling**, offering a clean, fluent API.
 
+This library is designed to **keep business logic in focus**: your main operations are expressed as top-level code, while **error handling is nested and orthogonalized** into listeners or automatically managed (e.g., by `Servler`).
+
 ---
 
 ## ⚡ Features
@@ -52,7 +54,6 @@ if (!h.ok) return;
 
 // Business logic in focus here
 console.log("✅ Context:", h.ctx); // { name: "Alice", age: 30 }
-
 ```
 
 ---
@@ -80,7 +81,6 @@ console.log("✅ Context:", h.ctx); // { name: "Alice", age: 30 }
     // Business logic in focus here
   }
 </script>
-
 ```
 
 ---
@@ -98,14 +98,14 @@ async function handler(req, res) {
     .checkMethod("POST")
     .checkContentType(/application\/json/)   // Require JSON body
     .checkAccept(/application\/json/)       // Client must accept JSON
-    .prepareQuery()                         // Attach req.query if missing
-    .prepareCookies();                      // Attach req.cookies if missing
+    .prepareQuery()                          // Attach req.query if missing
+    .prepareCookies();                       // Attach req.cookies if missing
 
   // Attach req.body (async operation) if missing
   await h.prepareBody();   
 
   // Errors are auto-converted to Notifications and sent to the client
-  if (!h.ok) return; 
+  if (!h.ok) return;
 
   // Business logic in focus here
   const result = { success: true };
@@ -113,7 +113,6 @@ async function handler(req, res) {
   // Send JSON response
   Res.json(res, 200, result);
 }
-
 ```
 
 ---
