@@ -40,7 +40,7 @@ import { Handler } from "@fizzwiz/awaitility";
 const data = { user: { name: "Alice" } };
 const defaultError = { message: "handler-fail" };
 
-const handler = new Handler(data, defaultError)
+const h = new Handler(data, defaultError)
   .on("handler-fail", err => /* handle general failure */)
   .on("handler-fail:wrong-name", err => /* handle specific failure */)
   .with("user")
@@ -48,10 +48,10 @@ const handler = new Handler(data, defaultError)
   .set("age", 30);
 
 // Errors are handled by listeners
-if (!handler.ok) return;
+if (!h.ok) return;
 
 // Business logic in focus here
-console.log("✅ Context:", handler.ctx); // { name: "Alice", age: 30 }
+console.log("✅ Context:", h.ctx); // { name: "Alice", age: 30 }
 
 ```
 
