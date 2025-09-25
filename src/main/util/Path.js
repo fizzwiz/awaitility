@@ -1,3 +1,4 @@
+import { AsyncEach } from "../../../../fluent/src/main/core/AsyncEach.js";
 import { Req } from "./Req.js";
 
 /**
@@ -145,34 +146,112 @@ static route(app, method, path, handler) {
   throw new Error('Unsupported application framework');
 }
 
-  /**
-   * Ensures that a nested path exists on the given object.
-   * If missing, intermediate objects are created.
-   *
-   * @param {object} obj - The root object.
-   * @param {Array<string>} keys - Nested property names.
-   * @returns {object} The final nested object reference.
-   */
-  static get(obj, keys, creating = false) {
-    let current = obj;
-    for (const key of keys) {
-      if (current[key] === undefined && creating) {
-        current[key] = {};
-      } 
-      current = current[key];
+ /**
+ * Gets a nested property.
+ *
+ * @param {object} obj - The root object.
+ * @param {string | Iterable<string>} keys Path to property as string or iteration of strings.
+ * @returns {Promise<any>} The nested property, or undefined if path not found.
+ */
+static get(obj, keys) {
+  keys = Path.keys(keys);
+
+  let current = obj;
+  for (const key of keys) {
+    if (current == null || !(key in current)) {
+      return undefined;
     }
-    return current;
+    current = current[key];
   }
 
-  static set(obj, keys, value) {
-    const nested = Path.get(obj, keys.slice(0, -1), true);
-    nested[keys[keys.length - 1]] = value;
+  return current;
+}
+
+
+/**
+ * Sets a nested property.
+ *
+ * @param {object} obj - The root object.
+ * @param {string | Iterable<string>} keys Path to property as string or iteration of strings.
+ * @param {any} value - The value to set.
+ * @param {boolean} [creating=false] - If true, creates missing objects along the path.
+ * @returns {Promise<void>}
+ */
+static set(obj, keys, value, creating = false) {
+  keys = Path.keys(keys);
+  if (!keys.length) {
+    throw new Error("Invalid path: empty keys");
   }
 
-  static keys(stringOrArray) {
-    return !stringOrArray? []
-      : Array.isArray(stringOrArray)? stringOrArray
-      : stringOrArray.split('.').filter(Boolean);
+  let current = obj;
+  let i = 0;
+  for (const key of keys.slice(0, -1)) {
+    if (!(key in current)) {
+      if (!creating) {
+        throw new Error(`nonexistent path: ${keys.slice(0, i + 1).join('.')}`);
+      }
+      current[key] = {};
+    }
+    current = current[key];
+    i++;
   }
+
+  current[keys[keys.length - 1]] = value;
+}
+
+static delete(obj, keys) {
+  keys = Path.keys(keys);
+  const ctx = Path.get(obj, keys.slice(0, -1));
+  delete ctx[keys[keys.length - 1]];
+}
+
+
+/**
+ * Normalize keys into a flat array of strings.
+ *
+ * Accepts:
+ * - Dot-separated string (e.g. `"user.profile"`)
+ * - Array of strings or promises
+ * - Promise resolving to string or array
+ * - Iterable / AsyncIterable of strings or promises
+ *
+ * @param {string | Iterable<string>} keys Path to property as string or iteration of strings.
+ * @returns {Promise<string[]>} A Promise resolving to a flat array of keys.
+ *
+ * @example
+ * await Path.keys("user.profile"); // → ["user", "profile"]
+ * await Path.keys(["user", Promise.resolve("profile")]); // → ["user", "profile"]
+ */
+static keys(input) {
+
+  if (typeof input === "string") {
+    return input.split(".").filter(Boolean);
+  }
+
+  return [...input];
+}
+
+/**
+ * Tests whether path `aa` is an ancestor of path `bb`.
+ * Example:
+ *   ["user"] is ancestor of ["user", "profile"]
+ *
+ * @param {string|string[]} aa - candidate ancestor path
+ * @param {string|string[]} bb - candidate descendant path
+ * @returns {boolean}
+ */
+static isAncestor(aa, bb) {
+  const kka = Path.keys(aa);
+  const kkb = Path.keys(bb);
+
+  if (kka.length > kkb.length) return false;
+
+  for (let i = 0; i < kka.length; i++) {
+    if (kka[i] !== kkb[i]) return false;
+  }
+  return true;
+}
+
+
 
 }

@@ -31,8 +31,20 @@
         <h2><span class="attribs"><span class="type-signature"></span></span>DomHandler<span class="signature">()</span><span class="type-signature"></span></h2>
         
             <div class="class-description"><h2>DomHandler</h2>
-<p>Chainable handler for DOM navigation, validation, and mutation.
-The <code>ctx</code> is always a Node (Document, Element, etc.).</p></div>
+<p>Extends the base Handler class with DOM-specific helpers:</p>
+<ul>
+<li>Selecting a node by CSS query selector</li>
+<li>Checking or setting attributes (for attributes not directly accessible via property paths)</li>
+</ul>
+<p>Text content and innerHTML can be accessed/modified using property paths
+(e.g., &quot;el.textContent&quot;, &quot;el.innerHTML&quot;).</p>
+<p>Works in a chainable, context-aware way like any Handler.</p>
+<p>Example usage:</p>
+<pre class="prettyprint source lang-js"><code>const handler = DomHandler.as()
+  .with('#myDiv', true)           // select node by CSS query
+  .set('textContent', 'Hi')       // sets the textContent
+  .checkAttr('foo', v => v === 'bar'); // checks an attribute
+</code></pre></div>
         
     
 </header>
@@ -124,16 +136,20 @@ The <code>ctx</code> is always a Node (Document, Element, etc.).</p></div>
     </div>
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Handler.html">Handler</a></li>
+    </ul>
+
 
     
 
     
-        <h3 class="subsection-title">Classes</h3>
 
-        <dl>
-            <dt><a href="DomHandler.html">DomHandler</a></dt>
-            <dd></dd>
-        </dl>
     
 
     
@@ -142,6 +158,78 @@ The <code>ctx</code> is always a Node (Document, Element, etc.).</p></div>
 
     
 
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="metaCtx"><span class="type-signature"></span>metaCtx<span class="type-signature"> :string</span></h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Handler.html#metaCtx">Handler#metaCtx</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
     
 
     
@@ -153,7 +241,7 @@ The <code>ctx</code> is always a Node (Document, Element, etc.).</p></div>
     
 
     
-    <h4 class="name" id="withQuery"><span class="type-signature"></span>withQuery<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
+    <h4 class="name" id="checkAttr"><span class="type-signature"></span>checkAttr<span class="signature">(attr, validator<span class="signature-attributes">opt</span>, error<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
     
 
     
@@ -161,11 +249,7 @@ The <code>ctx</code> is always a Node (Document, Element, etc.).</p></div>
 
 
 <div class="description">
-    <p>Navigate into a child element by a CSS selector.</p>
-<p>Works exactly like <code>with</code>, except the navigation target
-is resolved using <code>querySelector</code> instead of a property path.</p>
-<p>Use <code>without</code> to step back out of the selected element,
-just as with property-based navigation.</p>
+    <p>Post-execution check of a DOM attribute.</p>
 </div>
 
 
@@ -189,7 +273,944 @@ just as with property-based navigation.</p>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Attribute name</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>validator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    v=>!!v
+                
+                </td>
+            
+
+            <td class="description last"><p>Validator function</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Error</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Optional custom error</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="DomHandler.html">DomHandler</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="checkingAttr"><span class="type-signature"></span>checkingAttr<span class="signature">(attr, validator<span class="signature-attributes">opt</span>, error<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Pre-execution check of a DOM attribute.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Attribute name</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>validator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    v=>!!v
+                
+                </td>
+            
+
+            <td class="description last"><p>Validator function</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Error</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Optional custom error</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="DomHandler.html">DomHandler</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setAttr"><span class="type-signature"></span>setAttr<span class="signature">(attr, value, error<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Post-execution set of a DOM attribute (after current handler executes).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Attribute name</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Value to set</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Error</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Optional custom error</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="DomHandler.html">DomHandler</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="settingAttr"><span class="type-signature"></span>settingAttr<span class="signature">(attr, value, error<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Pre-execution set of a DOM attribute (before current handler executes).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Attribute name</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Value to set</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Error</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Optional custom error</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="DomHandler.html">DomHandler</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="with"><span class="type-signature"></span>with<span class="signature">(selector, isQuery<span class="signature-attributes">opt</span>, error<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Navigate into a nested DOM node using a CSS selector or path.
+Overrides the base Handler.with() to support DOM queries.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -214,10 +1235,98 @@ just as with property-based navigation.</p>
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>CSS selector.</p></td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Path (isQuery=false) or CSS query selector (isQuery=true)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isQuery</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>If true, treat selector as a CSS query</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Error</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Custom error to throw if the node is not found</p></td>
         </tr>
 
     
@@ -282,7 +1391,7 @@ just as with property-based navigation.</p>
 
         
 <div class="param-desc">
-    <p>this</p>
+    <p>A new handler targeting the selected node</p>
 </div>
 
 
@@ -304,9 +1413,166 @@ just as with property-based navigation.</p>
 
 
 
-    <h5>Example</h5>
+
+        
+            
+
     
-    <pre class="prettyprint"><code>// CSS selector navigation:handler.withQuery("#container > span.item");// Step back to the parent context:handler.without();</code></pre>
+
+    
+    <h4 class="name" id=".as"><span class="type-signature">(static) </span>as<span class="signature">(business<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Creates a DomHandler instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>business</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Optional function representing the business logic</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="DomHandler.html">DomHandler</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
 
 
 
@@ -326,13 +1592,13 @@ just as with property-based navigation.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-core.html">core</a></li><li><a href="module-handler.html">handler</a></li><li><a href="module-util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="Async.html">Async</a></li><li><a href="DomHandler.html">DomHandler</a></li><li><a href="Handler.html">Handler</a></li><li><a href="HttpRequestHandler.html">HttpRequestHandler</a></li><li><a href="Notification.html">Notification</a></li><li><a href="Path.html">Path</a></li><li><a href="Req.html">Req</a></li><li><a href="Res.html">Res</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-core.html">core</a></li><li><a href="module-error.html">error</a></li><li><a href="module-handler.html">handler</a></li><li><a href="module-util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="Async.html">Async</a></li><li><a href="DomError.html">DomError</a></li><li><a href="DomHandler.html">DomHandler</a></li><li><a href="Handler.html">Handler</a></li><li><a href="HandlerError.html">HandlerError</a></li><li><a href="HttpError.html">HttpError</a></li><li><a href="HttpHandler.html">HttpHandler</a></li><li><a href="Path.html">Path</a></li><li><a href="Req.html">Req</a></li><li><a href="Res.html">Res</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Sep 17 2025 20:43:49 GMT+0200 (Ora legale dell’Europa centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 25 2025 15:08:03 GMT+0200 (Ora legale dell’Europa centrale)
 </footer>
 
 <script> prettyPrint(); </script>

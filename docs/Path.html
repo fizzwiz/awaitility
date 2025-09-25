@@ -144,7 +144,7 @@
     
 
     
-    <h4 class="name" id=".get"><span class="type-signature">(static) </span>get<span class="signature">(obj, keys)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id=".get"><span class="type-signature">(static) </span>get<span class="signature">(obj, keys)</span><span class="type-signature"> &rarr; {Promise.&lt;any>}</span></h4>
     
 
     
@@ -152,8 +152,7 @@
 
 
 <div class="description">
-    <p>Ensures that a nested path exists on the given object.
-If missing, intermediate objects are created.</p>
+    <p>Gets a nested property.</p>
 </div>
 
 
@@ -218,7 +217,10 @@ If missing, intermediate objects are created.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Iterable.&lt;string></span>
 
 
             
@@ -228,7 +230,7 @@ If missing, intermediate objects are created.</p>
 
             
 
-            <td class="description last"><p>Nested property names.</p></td>
+            <td class="description last"><p>Path to property as string or iteration of strings.</p></td>
         </tr>
 
     
@@ -293,7 +295,7 @@ If missing, intermediate objects are created.</p>
 
         
 <div class="param-desc">
-    <p>The final nested object reference.</p>
+    <p>The nested property, or undefined if path not found.</p>
 </div>
 
 
@@ -304,7 +306,188 @@ If missing, intermediate objects are created.</p>
     </dt>
     <dd>
         
-<span class="param-type">object</span>
+<span class="param-type">Promise.&lt;any></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".isAncestor"><span class="type-signature">(static) </span>isAncestor<span class="signature">(aa, bb)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Tests whether path <code>aa</code> is an ancestor of path <code>bb</code>.
+Example:
+[&quot;user&quot;] is ancestor of [&quot;user&quot;, &quot;profile&quot;]</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>aa</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>candidate ancestor path</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>candidate descendant path</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -511,6 +694,175 @@ If missing, intermediate objects are created.</p>
     
 
     
+    <h4 class="name" id=".keys"><span class="type-signature">(static) </span>keys<span class="signature">(keys)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;string>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Normalize keys into a flat array of strings.</p>
+<p>Accepts:</p>
+<ul>
+<li>Dot-separated string (e.g. <code>&quot;user.profile&quot;</code>)</li>
+<li>Array of strings or promises</li>
+<li>Promise resolving to string or array</li>
+<li>Iterable / AsyncIterable of strings or promises</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>keys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Iterable.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Path to property as string or iteration of strings.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A Promise resolving to a flat array of keys.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;string>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>await Path.keys("user.profile"); // → ["user", "profile"]await Path.keys(["user", Promise.resolve("profile")]); // → ["user", "profile"]</code></pre>
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id=".normalize"><span class="type-signature">(static) </span>normalize<span class="signature">(path)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
@@ -671,6 +1023,284 @@ If missing, intermediate objects are created.</p>
     
 
     
+    <h4 class="name" id=".set"><span class="type-signature">(static) </span>set<span class="signature">(obj, keys, value, creating<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Sets a nested property.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The root object.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>keys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Iterable.&lt;string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Path to property as string or iteration of strings.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The value to set.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>creating</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>If true, creates missing objects along the path.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id=".subpaths"><span class="type-signature">(generator, static) </span>subpaths<span class="signature">(path)</span><span class="type-signature"></span></h4>
     
 
@@ -813,13 +1443,13 @@ If missing, intermediate objects are created.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-core.html">core</a></li><li><a href="module-handler.html">handler</a></li><li><a href="module-util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="Async.html">Async</a></li><li><a href="Domler.html">Domler</a></li><li><a href="Handler.html">Handler</a></li><li><a href="Notification.html">Notification</a></li><li><a href="Path.html">Path</a></li><li><a href="Req.html">Req</a></li><li><a href="Res.html">Res</a></li><li><a href="Servler.html">Servler</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-core.html">core</a></li><li><a href="module-error.html">error</a></li><li><a href="module-handler.html">handler</a></li><li><a href="module-util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="Async.html">Async</a></li><li><a href="DomError.html">DomError</a></li><li><a href="DomHandler.html">DomHandler</a></li><li><a href="Handler.html">Handler</a></li><li><a href="HandlerError.html">HandlerError</a></li><li><a href="HttpError.html">HttpError</a></li><li><a href="HttpHandler.html">HttpHandler</a></li><li><a href="Path.html">Path</a></li><li><a href="Req.html">Req</a></li><li><a href="Res.html">Res</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 18 2025 09:56:05 GMT+0200 (Ora legale dell’Europa centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 25 2025 15:08:03 GMT+0200 (Ora legale dell’Europa centrale)
 </footer>
 
 <script> prettyPrint(); </script>

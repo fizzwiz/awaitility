@@ -1,51 +1,5 @@
-import { Notification } from "../core/Notification.js";
-
 /** utility methods */
 export class Async {
-
-/**
- * Runs a promise-returning function with a timeout.
- * Rejects with an Event if it doesn’t resolve within the given time.
- *
- * @param {number} timeoutMs - Timeout in milliseconds.
- * @param {function() : Promise<any>} fn - Async function to run.
- * @param {any} [scopeId] - Optional scope identifier for the Event
- * @returns {Promise<any>}
- */
-static async within(timeoutMs, fn, scopeId) {
-  let timer;
-  try {
-    return await Promise.race([
-      fn(),
-      new Promise((_, reject) => {
-        timer = setTimeout(() => {
-          const err = new Notification(
-            'timeout-fail',
-            { message: 'Operation timed out' },
-            undefined,
-            scopeId
-          );
-          reject(err);
-        }, timeoutMs);
-      })
-    ]);
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-
-  static async resolve(objOrFn, ctx, error, onError, timeoutMs) {
-    try {
-      const fn = typeof objOrFn === 'function' ? objOrFn.bind(undefined, ctx) : () => objOrFn;
-      const result = timeoutMs ? await Async.within(timeoutMs, fn, 'timeout') : await fn();
-      return result;
-    } catch (err) {
-      if (error) err = { ...error, source: err };
-      if (onError) await onError(err);
-      throw err;
-    }
-  }
 
 /**
  * Attaches a listener to a target emitter (DOM EventTarget, Node.js EventEmitter, etc.)
