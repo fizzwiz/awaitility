@@ -249,7 +249,7 @@
 
 
 <div class="description">
-    <p>Post-execution check of a DOM attribute.</p>
+    <p>Post-execution check of a DOM attribute (after the business logic runs).</p>
 </div>
 
 
@@ -317,7 +317,7 @@
                 </td>
             
 
-            <td class="description last"><p>Attribute name</p></td>
+            <td class="description last"><p>The attribute name to validate.</p></td>
         </tr>
 
     
@@ -356,7 +356,8 @@
                 </td>
             
 
-            <td class="description last"><p>Validator function</p></td>
+            <td class="description last"><p>A predicate function that receives the attribute value
+and must return <code>true</code> for the check to pass. Defaults to truthy check.</p></td>
         </tr>
 
     
@@ -369,7 +370,7 @@
             <td class="type">
             
                 
-<span class="param-type">Error</span>
+<span class="param-type"><a href="DomError.html">DomError</a></span>
 
 
             
@@ -390,10 +391,13 @@
             
                 <td class="default">
                 
+                    new DomError(`Invalid or missing attribute`)
+                
                 </td>
             
 
-            <td class="description last"><p>Optional custom error</p></td>
+            <td class="description last"><p>Error instance used if
+the context is not a DOM element or validation fails.</p></td>
         </tr>
 
     
@@ -457,6 +461,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>A new DomHandler in the chain.</p>
+</div>
+
 
 
 <dl>
@@ -491,7 +499,7 @@
 
 
 <div class="description">
-    <p>Pre-execution check of a DOM attribute.</p>
+    <p>Pre-execution check of a DOM attribute (before the business logic runs).</p>
 </div>
 
 
@@ -559,7 +567,7 @@
                 </td>
             
 
-            <td class="description last"><p>Attribute name</p></td>
+            <td class="description last"><p>The attribute name to validate.</p></td>
         </tr>
 
     
@@ -598,7 +606,8 @@
                 </td>
             
 
-            <td class="description last"><p>Validator function</p></td>
+            <td class="description last"><p>A predicate function that receives the attribute value
+and must return <code>true</code> for the check to pass. Defaults to truthy check.</p></td>
         </tr>
 
     
@@ -611,7 +620,7 @@
             <td class="type">
             
                 
-<span class="param-type">Error</span>
+<span class="param-type"><a href="DomError.html">DomError</a></span>
 
 
             
@@ -632,10 +641,13 @@
             
                 <td class="default">
                 
+                    new DomError(`Invalid or missing attribute`)
+                
                 </td>
             
 
-            <td class="description last"><p>Optional custom error</p></td>
+            <td class="description last"><p>Error instance used if
+the context is not a DOM element or validation fails.</p></td>
         </tr>
 
     
@@ -699,6 +711,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>A new DomHandler in the chain.</p>
+</div>
+
 
 
 <dl>
@@ -761,6 +777,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -794,8 +812,12 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last"><p>Attribute name</p></td>
+            <td class="description last"><p>Attribute name.</p></td>
         </tr>
 
     
@@ -825,8 +847,12 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last"><p>Value to set</p></td>
+            <td class="description last"><p>Value to assign.</p></td>
         </tr>
 
     
@@ -839,7 +865,7 @@
             <td class="type">
             
                 
-<span class="param-type">Error</span>
+<span class="param-type"><a href="DomError.html">DomError</a></span>
 
 
             
@@ -858,8 +884,14 @@
             
 
             
+                <td class="default">
+                
+                    new DomError(`Not a DOM element`)
+                
+                </td>
+            
 
-            <td class="description last"><p>Optional custom error</p></td>
+            <td class="description last"><p>Error to throw if context is invalid.</p></td>
         </tr>
 
     
@@ -985,6 +1017,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1018,8 +1052,12 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last"><p>Attribute name</p></td>
+            <td class="description last"><p>Attribute name.</p></td>
         </tr>
 
     
@@ -1049,8 +1087,12 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last"><p>Value to set</p></td>
+            <td class="description last"><p>Value to assign.</p></td>
         </tr>
 
     
@@ -1063,7 +1105,7 @@
             <td class="type">
             
                 
-<span class="param-type">Error</span>
+<span class="param-type"><a href="DomError.html">DomError</a></span>
 
 
             
@@ -1082,8 +1124,14 @@
             
 
             
+                <td class="default">
+                
+                    new DomError(`Not a DOM element`)
+                
+                </td>
+            
 
-            <td class="description last"><p>Optional custom error</p></td>
+            <td class="description last"><p>Error to throw if context is invalid.</p></td>
         </tr>
 
     
@@ -1173,7 +1221,7 @@
     
 
     
-    <h4 class="name" id="with"><span class="type-signature"></span>with<span class="signature">(selector, isQuery<span class="signature-attributes">opt</span>, error<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
+    <h4 class="name" id="with"><span class="type-signature"></span>with<span class="signature">(selector, isQuery<span class="signature-attributes">opt</span>, creating<span class="signature-attributes">opt</span>, error<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="DomHandler.html">DomHandler</a>}</span></h4>
     
 
     
@@ -1181,8 +1229,13 @@
 
 
 <div class="description">
-    <p>Navigate into a nested DOM node using a CSS selector or path.
+    <p>Navigate into a nested DOM node using a CSS selector or property path.
 Overrides the base Handler.with() to support DOM queries.</p>
+<p>When using a CSS selector (<code>isQuery = true</code>):</p>
+<ul>
+<li>If the current context is not a DOM node, the error is cloned with a cause.</li>
+<li>If querySelector fails, the error is cloned with a cause.</li>
+</ul>
 </div>
 
 
@@ -1250,7 +1303,7 @@ Overrides the base Handler.with() to support DOM queries.</p>
                 </td>
             
 
-            <td class="description last"><p>Path (isQuery=false) or CSS query selector (isQuery=true)</p></td>
+            <td class="description last"><p>Path (when isQuery=false) or CSS query selector (when isQuery=true).</p></td>
         </tr>
 
     
@@ -1289,20 +1342,20 @@ Overrides the base Handler.with() to support DOM queries.</p>
                 </td>
             
 
-            <td class="description last"><p>If true, treat selector as a CSS query</p></td>
+            <td class="description last"><p>If true, treat selector as a CSS query.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>error</code></td>
+                <td class="name"><code>creating</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Error</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -1323,10 +1376,51 @@ Overrides the base Handler.with() to support DOM queries.</p>
             
                 <td class="default">
                 
+                    true
+                
                 </td>
             
 
-            <td class="description last"><p>Custom error to throw if the node is not found</p></td>
+            <td class="description last"><p>Only used if isQuery=false. If true, the path is created.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DomError.html">DomError</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    new DomError('Node not found for selector', selector, isQuery)
+                
+                </td>
+            
+
+            <td class="description last"><p>Custom error to throw if node is not found. Will be cloned with a cause if available.</p></td>
         </tr>
 
     
@@ -1391,7 +1485,7 @@ Overrides the base Handler.with() to support DOM queries.</p>
 
         
 <div class="param-desc">
-    <p>A new handler targeting the selected node</p>
+    <p>A new handler targeting the selected node.</p>
 </div>
 
 
@@ -1577,6 +1671,522 @@ Overrides the base Handler.with() to support DOM queries.</p>
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id=".doCheckAttr"><span class="type-signature">(static) </span>doCheckAttr<span class="signature">(ctx, attr, validator, error)</span><span class="type-signature"> &rarr; {Element|Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Static helper to check a DOM attribute.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Element</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The current context node (must implement <code>getAttribute</code>).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>attr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The attribute name to validate.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>validator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A predicate function that validates the attribute value.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DomError.html">DomError</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Error instance to throw or clone if validation fails.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If the context is not a DOM element or validation fails.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type"><a href="DomError.html">DomError</a></span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The same context if validation succeeds.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Element</span>
+|
+
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".doSetAttr"><span class="type-signature">(static) </span>doSetAttr<span class="signature">(ctx, attr, value, error)</span><span class="type-signature"> &rarr; {Element|Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Static helper to set a DOM attribute.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Element</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Current context node (must implement <code>setAttribute</code>).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>attr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Attribute name.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Value to assign.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DomError.html">DomError</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Error instance to throw if context is invalid.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If the current context is not a DOM element.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type"><a href="DomError.html">DomError</a></span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The same context, for chaining.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Element</span>
+|
+
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -1598,7 +2208,7 @@ Overrides the base Handler.with() to support DOM queries.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 25 2025 15:08:03 GMT+0200 (Ora legale dell’Europa centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 25 2025 18:34:50 GMT+0200 (Ora legale dell’Europa centrale)
 </footer>
 
 <script> prettyPrint(); </script>

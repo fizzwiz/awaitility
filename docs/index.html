@@ -49,15 +49,15 @@
 </blockquote>
 <hr>
 <h2>🌐 Overview</h2>
-<p><code>@fizzwiz/awaitility</code> provides a set of <strong>chainable, context-aware handlers</strong> for general data structures, DOM manipulation, and HTTP workflows.
+<p><code>@fizzwiz/awaitility</code> provides <strong>chainable, context-aware handlers</strong> for general data, DOM manipulation, and HTTP workflows.
 It simplifies <strong>asynchronous operations</strong>, <strong>nested context navigation</strong>, and <strong>error handling</strong>, offering a clean, fluent API.</p>
-<p>This library is designed to <strong>keep business logic in focus</strong>: your main operations are expressed as top-level code, while <strong>error handling is nested and orthogonalized</strong> into listeners or automatically managed (e.g., by <code>Servler</code>).</p>
+<p>Business logic remains in focus: main operations are expressed as top-level code, while <strong>errors are thrown</strong> and can be handled via <code>.else()</code>.</p>
 <hr>
 <h2>⚡ Features</h2>
 <ul>
-<li>🛠 <strong>Handler</strong>: Base class for chainable operations with synchronous and asynchronous checks.</li>
-<li>🌳 <strong>Domler</strong>: Chainable DOM navigation and async mutation.</li>
-<li>📡 <strong>Servler</strong>: Simplified HTTP request/response handling.</li>
+<li>🛠 <strong>Handler</strong>: Base class for chainable asynchronous operations.</li>
+<li>🌳 <strong>DomHandler</strong>: Chainable DOM navigation and async mutation.</li>
+<li>📡 <strong>HttpHandler</strong>: Simplified HTTP request/response handling.</li>
 <li>⏱ <strong>Async</strong>: Utilities for asynchronous workflows.</li>
 <li>📨 <strong>Req / Res</strong>: Minimal request and response utilities.</li>
 <li>🗂 <strong>Path</strong>: Utilities for working with nested objects or URLs.</li>
@@ -71,109 +71,107 @@ It simplifies <strong>asynchronous operations</strong>, <strong>nested context n
 <h3>🛠 Handler</h3>
 <pre class="prettyprint source lang-js"><code>import { Handler } from &quot;@fizzwiz/awaitility&quot;;
 
-const data = { user: { name: &quot;Alice&quot; } };
-const defaultError = { message: &quot;handler-fail&quot; };
+const data = { user: { name: &quot;Alice&quot;, age: 25 } };
 
-const h = new Handler(data, defaultError)
-  .on(&quot;handler-fail&quot;, err => /* handle general failure */)
-  .on(&quot;handler-fail:wrong-name&quot;, err => /* handle specific failure */)
-  .with(&quot;user&quot;)
-  .check(ctx => ctx.name === &quot;Alice&quot;, { message: &quot;wrong-name&quot; })  // Second argument = error thrown if the predicate fails
-  .set(&quot;age&quot;, 30);
+// Main business logic: declared first
+const business = ctx => {
+  // some computation
+  ctx.user.age += 1;
+  return ctx;
+};
 
-// Errors are handled by listeners
-if (!h.ok) return;
+// Decorate the main business logic with checks and error handlings
+const h = Handler.as(business)
+  // Pre-execution check: happens BEFORE the business logic runs
+  .checking(&quot;user.age&quot;)     // throws if the property is not defined
+  .else((ctx, err) => console.error(&quot;❌ Error caught:&quot;, err));
 
-// Business logic in focus here
-console.log(&quot;✅ Context:&quot;, h.ctx); // { name: &quot;Alice&quot;, age: 30 }
+// The handler is just an asynchronous function
+const result = await h(data);
+
+console.log(&quot;✅ Updated context:&quot;, result); // Output: { name: &quot;Alice&quot;, age: 26 }
+
 </code></pre>
 <hr>
-<h3>🌳 Domler</h3>
+<h3>🌳 DomHandler</h3>
 <pre class="prettyprint source lang-html"><code>&lt;script type=&quot;module&quot;>
-  import { Domler } from &quot;@fizzwiz/awaitility&quot;;
+import { DomHandler } from &quot;@fizzwiz/awaitility&quot;;
 
-  async function handler(event) {
-    const h = new Domler(document)
-      .on(&quot;fetch-html-fail&quot;, err => /* handle fetch failure */)
-      .withQuery(&quot;#container&quot;)
-      .setAttr(&quot;data-id&quot;, &quot;123&quot;);
+const business = async ctx => {
+  // main computation with DOM context
+  console.log(&quot;💻 Business logic running on&quot;, ctx);
+  return ctx;
+};
 
-    await h.asyncSetHTML(
-      async () => fetch(&quot;/snippet.html&quot;).then(res => res.text()),
-      { message: &quot;fetch-html-fail&quot; }
-    );
+const validator = html => html.includes(&quot;snippet&quot;); // example validator
 
-    // Errors are handled by listeners
-    if (!h.ok) return;
+const h = DomHandler.as(business)
+  // pre-execution setting: fetch HTML and set it to body.innerHTML
+  .setting(&quot;body.innerHTML&quot;, async () => fetch(&quot;/snippet.html&quot;).then(r => r.text()))
+  // post-execution check: verify the content
+  .check(&quot;body.innerHTML&quot;, validator)
+  // centralized error handling
+  .else((ctx, err) => console.error(&quot;❌ Error caught:&quot;, err));
 
-    // Business logic in focus here
-  }
+await h(document);
+
 &lt;/script>
 </code></pre>
 <hr>
-<h3>📡 Servler</h3>
-<pre class="prettyprint source lang-js"><code>import { Servler, Res } from &quot;@fizzwiz/awaitility&quot;;
+<h3>📡 HttpHandler</h3>
+<pre class="prettyprint source lang-js"><code>import { HttpHandler, Res } from &quot;@fizzwiz/awaitility&quot;;
 
-// Example: a framework-agnostic route handler
-async function handler(req, res) {
-  const h = new Servler({ req, res });
+// Main computation
+const business = async ctx => {
+  console.log(&quot;💻 Business logic running with HTTP context:&quot;, ctx.req);
+  return ctx;
+};
 
-  h
-    .checkMethod(&quot;POST&quot;)
-    .checkContentType(/application\/json/)   // Require JSON body
-    .checkAccept(/application\/json/)       // Client must accept JSON
-    .prepareQuery()                          // Attach req.query if missing
-    .prepareCookies();                       // Attach req.cookies if missing
+// Validator for the token
+const validator = token => typeof token === &quot;string&quot; && token.length > 0;
 
-  // Attach req.body (async operation) if missing
-  await h.prepareBody();   
+const h = HttpHandler.as(business)
+  // pre-execution: ensure req.token is prepared (by extractin the token from the cookies, for example)
+  .preparingToken()
+  // post-execution: validate token
+  .check(&quot;req.token&quot;, validator)
+  // centralized error handling
+  .else((ctx, err) => {
+    console.error(&quot;❌ Error caught:&quot;, err);
+    // Optionally send JSON response
+    Res.json(ctx.res, 401, { error: err.message });
+  });
 
-  // Errors are auto-converted to Notifications and sent to the client
-  if (!h.ok) return;
+// Run the handler with HTTP context
+await h({ req, res });
 
-  // Business logic in focus here
-  const result = { success: true };
-
-  // Send JSON response
-  Res.json(res, 200, result);
-}
 </code></pre>
 <hr>
 <h2>📚 API Reference</h2>
 <h3>🛠 Handler</h3>
 <ul>
-<li><code>with(path, error?, onError?, creating?)</code> - Navigate into a nested object.</li>
-<li><code>without(nsteps?)</code> - Step back in the path stack.</li>
-<li><code>get(path?, creating?)</code> - Get a nested property.</li>
-<li><code>set(path, value, error?, onError?, creating?)</code> - Set a property.</li>
-<li><code>asyncSet(path, value, error?, onError?, creating?)</code> - Set a property asynchronously.</li>
-<li><code>check(predicate, error?, onError?)</code> - Synchronous check.</li>
-<li><code>asyncCheck(predicate, error?, onError?)</code> - Asynchronous check.</li>
-<li><code>exec(fn, error?, onError?)</code> - Synchronous side-effect function.</li>
-<li><code>asyncExec(fn, error?, onError?)</code> - Asynchronous side-effect function.</li>
-<li><code>fail(err, cause?, onError?)</code> - Fail handler and emit enriched error.</li>
+<li><code>with(path, creating = true, error?)</code> – Navigate into a nested object.</li>
+<li><code>without(nsteps = 1)</code> – Step back in the path stack.</li>
+<li><code>setting/set(path, value, creating = true, error?)</code> – Set property.</li>
+<li><code>checking/check(path, validator?, error?)</code> – Check property.</li>
 </ul>
-<h3>🌳 Domler</h3>
+<h3>🌳 DomHandler</h3>
 <ul>
 <li>Extends <code>Handler</code>.</li>
-<li><code>withQuery(selector, error?, onError?)</code> - Navigate DOM element by CSS selector.</li>
-<li><code>setText(value, error?, onError?)</code> - Set <code>textContent</code>.</li>
-<li><code>setHTML(html, error?, onError?)</code> - Set <code>innerHTML</code>.</li>
-<li><code>setAttr(attr, value, error?, onError?)</code> - Set attribute.</li>
-<li>Async equivalents: <code>asyncSetText</code>, <code>asyncSetHTML</code>, <code>asyncSetAttr</code>.</li>
+<li><code>with(selector, isQuery?, creating?, error?)</code> – Navigate DOM element by CSS selector.</li>
+<li><code>setting/setAttr(attr, value, error?)</code> – Set attribute.</li>
+<li><code>checking/checktAttr(attr, value, error?)</code> – Check attribute.</li>
 </ul>
-<h3>📡 Servler</h3>
+<h3>📡 HttpHandler</h3>
 <ul>
-<li><code>prepareBody()</code>, <code>prepareQuery()</code>, <code>prepareToken()</code>, <code>checkMethod()</code>, <code>checkToken()</code>, <code>checkQueryParam()</code>, <code>checkCookie()</code>, <code>checkHeader()</code>, <code>checkContentType()</code>, <code>checkAccept()</code></li>
-<li>By default, errors are converted into a <code>Notification</code> instance sent automatically to the client.</li>
+<li>Extends <code>Handler</code>.</li>
+<li><code>preparing/prepareBody()</code>, <code>preparing/prepareQuery()</code>, <code>preparing/prepareCookies()</code>, <code>preparing/prepareToken()</code></li>
+<li>Errors are <strong>thrown</strong> and can be caught with <code>.else()</code> for selective recovery.</li>
 </ul>
 <hr>
 <h2>🤝 Contributing</h2>
 <p>Contributions, bug reports, and feature requests are welcome!
 Please open issues or pull requests on the <a href="https://github.com/fizzwiz/awaitility">GitHub repository</a>.</p>
-<hr>
-<h2>📖 Tutorials and Learning</h2>
-<p>Check the 👉 <a href="http://awaitility-js.blogspot.com">blog</a> for tutorials and in-depth examples.</p>
 <hr>
 <h2>📝 License</h2>
 <p>MIT © 2025 Fizzwiz</p></article>
@@ -193,7 +191,7 @@ Please open issues or pull requests on the <a href="https://github.com/fizzwiz/a
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 25 2025 15:08:03 GMT+0200 (Ora legale dell’Europa centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 25 2025 18:34:50 GMT+0200 (Ora legale dell’Europa centrale)
 </footer>
 
 <script> prettyPrint(); </script>

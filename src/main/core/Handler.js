@@ -1,6 +1,5 @@
 import { AsyncWhat } from "@fizzwiz/fluent";
 import { Path } from "../util/Path.js";
-import { HandlerError } from "./HandlerError.js";
 
 /**
  * Handler
@@ -28,7 +27,7 @@ export class Handler extends AsyncWhat {
   checking(prop, validator = async v => !!v, error) {
     return this.if(async ctx => {
       const ok = await validator(Handler.ctx(ctx, prop));
-      if (!ok) throw HandlerError.build(prop, error, ctx);
+      if (!ok) throw error;
       return ctx;
     });
   }
@@ -36,7 +35,7 @@ export class Handler extends AsyncWhat {
   check(prop, validator = async v => !!v, error) {
     return this.sthen(async ctx => {
       const ok = await validator(Handler.ctx(ctx, prop));
-      if (!ok) throw HandlerError.build(prop, error, ctx);
+      if (!ok) throw error;
       return ctx;
     });
   }
@@ -68,7 +67,7 @@ export class Handler extends AsyncWhat {
       Path.set(current, prop, resolved, creating);
       return ctx;
     } catch (cause) {
-      throw HandlerError.build(prop, error, ctx, cause);
+      throw error.clone?.(cause) || error || cause;
     }
   }
 
@@ -92,7 +91,7 @@ export class Handler extends AsyncWhat {
           current = {};
           Path.set(root, path, current, true);
         } else {
-          throw HandlerError.build(path, error, ctx);
+          throw error;
         }
       }
 

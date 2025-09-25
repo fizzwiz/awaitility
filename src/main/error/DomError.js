@@ -16,4 +16,13 @@ import { HandlerError } from "../core/HandlerError.js";
       super(message, path, cause);
       this.isQuery = isQuery;
     }
+
+      /**
+   * Clones this error with a new cause.
+   *
+   * @param {*} cause - The underlying cause of the error.
+   */
+  clone(cause) {
+    return new DomError(this.message, this.path, this.isQuery, cause);
+  } 
   }

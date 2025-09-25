@@ -6,18 +6,18 @@
 
 ## 🌐 Overview
 
-`@fizzwiz/awaitility` provides a set of **chainable, context-aware handlers** for general data structures, DOM manipulation, and HTTP workflows.
+`@fizzwiz/awaitility` provides **chainable, context-aware handlers** for general data, DOM manipulation, and HTTP workflows.
 It simplifies **asynchronous operations**, **nested context navigation**, and **error handling**, offering a clean, fluent API.
 
-This library is designed to **keep business logic in focus**: your main operations are expressed as top-level code, while **error handling is nested and orthogonalized** into listeners or automatically managed (e.g., by `Servler`).
+Business logic remains in focus: main operations are expressed as top-level code, while **errors are thrown** and can be handled via `.else()`.
 
 ---
 
 ## ⚡ Features
 
-* 🛠 **Handler**: Base class for chainable operations with synchronous and asynchronous checks.
-* 🌳 **Domler**: Chainable DOM navigation and async mutation.
-* 📡 **Servler**: Simplified HTTP request/response handling.
+* 🛠 **Handler**: Base class for chainable asynchronous operations.
+* 🌳 **DomHandler**: Chainable DOM navigation and async mutation.
+* 📡 **HttpHandler**: Simplified HTTP request/response handling.
 * ⏱ **Async**: Utilities for asynchronous workflows.
 * 📨 **Req / Res**: Minimal request and response utilities.
 * 🗂 **Path**: Utilities for working with nested objects or URLs.
@@ -39,80 +39,88 @@ npm install @fizzwiz/awaitility
 ```js
 import { Handler } from "@fizzwiz/awaitility";
 
-const data = { user: { name: "Alice" } };
-const defaultError = { message: "handler-fail" };
+const data = { user: { name: "Alice", age: 25 } };
 
-const h = new Handler(data, defaultError)
-  .on("handler-fail", err => /* handle general failure */)
-  .on("handler-fail:wrong-name", err => /* handle specific failure */)
-  .with("user")
-  .check(ctx => ctx.name === "Alice", { message: "wrong-name" })  // Second argument = error thrown if the predicate fails
-  .set("age", 30);
+// Main business logic: declared first
+const business = ctx => {
+  // some computation
+  ctx.user.age += 1;
+  return ctx;
+};
 
-// Errors are handled by listeners
-if (!h.ok) return;
+// Decorate the main business logic with checks and error handlings
+const h = Handler.as(business)
+  // Pre-execution check: happens BEFORE the business logic runs
+  .checking("user.age")     // throws if the property is not defined
+  .else((ctx, err) => console.error("❌ Error caught:", err));
 
-// Business logic in focus here
-console.log("✅ Context:", h.ctx); // { name: "Alice", age: 30 }
+// The handler is just an asynchronous function
+const result = await h(data);
+
+console.log("✅ Updated context:", result); // Output: { name: "Alice", age: 26 }
+
 ```
 
 ---
 
-### 🌳 Domler
+### 🌳 DomHandler
 
 ```html
 <script type="module">
-  import { Domler } from "@fizzwiz/awaitility";
+import { DomHandler } from "@fizzwiz/awaitility";
 
-  async function handler(event) {
-    const h = new Domler(document)
-      .on("fetch-html-fail", err => /* handle fetch failure */)
-      .withQuery("#container")
-      .setAttr("data-id", "123");
+const business = async ctx => {
+  // main computation with DOM context
+  console.log("💻 Business logic running on", ctx);
+  return ctx;
+};
 
-    await h.asyncSetHTML(
-      async () => fetch("/snippet.html").then(res => res.text()),
-      { message: "fetch-html-fail" }
-    );
+const validator = html => html.includes("snippet"); // example validator
 
-    // Errors are handled by listeners
-    if (!h.ok) return;
+const h = DomHandler.as(business)
+  // pre-execution setting: fetch HTML and set it to body.innerHTML
+  .setting("body.innerHTML", async () => fetch("/snippet.html").then(r => r.text()))
+  // post-execution check: verify the content
+  .check("body.innerHTML", validator)
+  // centralized error handling
+  .else((ctx, err) => console.error("❌ Error caught:", err));
 
-    // Business logic in focus here
-  }
+await h(document);
+
 </script>
 ```
 
 ---
 
-### 📡 Servler
+### 📡 HttpHandler
 
 ```js
-import { Servler, Res } from "@fizzwiz/awaitility";
+import { HttpHandler, Res } from "@fizzwiz/awaitility";
 
-// Example: a framework-agnostic route handler
-async function handler(req, res) {
-  const h = new Servler({ req, res });
+// Main computation
+const business = async ctx => {
+  console.log("💻 Business logic running with HTTP context:", ctx.req);
+  return ctx;
+};
 
-  h
-    .checkMethod("POST")
-    .checkContentType(/application\/json/)   // Require JSON body
-    .checkAccept(/application\/json/)       // Client must accept JSON
-    .prepareQuery()                          // Attach req.query if missing
-    .prepareCookies();                       // Attach req.cookies if missing
+// Validator for the token
+const validator = token => typeof token === "string" && token.length > 0;
 
-  // Attach req.body (async operation) if missing
-  await h.prepareBody();   
+const h = HttpHandler.as(business)
+  // pre-execution: ensure req.token is prepared (by extractin the token from the cookies, for example)
+  .preparingToken()
+  // post-execution: validate token
+  .check("req.token", validator)
+  // centralized error handling
+  .else((ctx, err) => {
+    console.error("❌ Error caught:", err);
+    // Optionally send JSON response
+    Res.json(ctx.res, 401, { error: err.message });
+  });
 
-  // Errors are auto-converted to Notifications and sent to the client
-  if (!h.ok) return;
+// Run the handler with HTTP context
+await h({ req, res });
 
-  // Business logic in focus here
-  const result = { success: true };
-
-  // Send JSON response
-  Res.json(res, 200, result);
-}
 ```
 
 ---
@@ -121,30 +129,23 @@ async function handler(req, res) {
 
 ### 🛠 Handler
 
-* `with(path, error?, onError?, creating?)` - Navigate into a nested object.
-* `without(nsteps?)` - Step back in the path stack.
-* `get(path?, creating?)` - Get a nested property.
-* `set(path, value, error?, onError?, creating?)` - Set a property.
-* `asyncSet(path, value, error?, onError?, creating?)` - Set a property asynchronously.
-* `check(predicate, error?, onError?)` - Synchronous check.
-* `asyncCheck(predicate, error?, onError?)` - Asynchronous check.
-* `exec(fn, error?, onError?)` - Synchronous side-effect function.
-* `asyncExec(fn, error?, onError?)` - Asynchronous side-effect function.
-* `fail(err, cause?, onError?)` - Fail handler and emit enriched error.
+* `with(path, creating = true, error?)` – Navigate into a nested object.
+* `without(nsteps = 1)` – Step back in the path stack.
+* `setting/set(path, value, creating = true, error?)` – Set property.
+* `checking/check(path, validator?, error?)` – Check property.
 
-### 🌳 Domler
+### 🌳 DomHandler
 
 * Extends `Handler`.
-* `withQuery(selector, error?, onError?)` - Navigate DOM element by CSS selector.
-* `setText(value, error?, onError?)` - Set `textContent`.
-* `setHTML(html, error?, onError?)` - Set `innerHTML`.
-* `setAttr(attr, value, error?, onError?)` - Set attribute.
-* Async equivalents: `asyncSetText`, `asyncSetHTML`, `asyncSetAttr`.
+* `with(selector, isQuery?, creating?, error?)` – Navigate DOM element by CSS selector.
+* `setting/setAttr(attr, value, error?)` – Set attribute.
+* `checking/checktAttr(attr, value, error?)` – Check attribute.
 
-### 📡 Servler
+### 📡 HttpHandler
 
-* `prepareBody()`, `prepareQuery()`, `prepareToken()`, `checkMethod()`, `checkToken()`, `checkQueryParam()`, `checkCookie()`, `checkHeader()`, `checkContentType()`, `checkAccept()`
-* By default, errors are converted into a `Notification` instance sent automatically to the client.
+* Extends `Handler`.
+* `preparing/prepareBody()`, `preparing/prepareQuery()`, `preparing/prepareCookies()`, `preparing/prepareToken()`
+* Errors are **thrown** and can be caught with `.else()` for selective recovery.
 
 ---
 
@@ -152,12 +153,6 @@ async function handler(req, res) {
 
 Contributions, bug reports, and feature requests are welcome!
 Please open issues or pull requests on the [GitHub repository](https://github.com/fizzwiz/awaitility).
-
----
-
-## 📖 Tutorials and Learning
-
-Check the 👉 [blog](http://awaitility-js.blogspot.com) for tutorials and in-depth examples.
 
 ---
 

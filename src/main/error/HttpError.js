@@ -1,5 +1,5 @@
   import { HandlerError } from "../core/HandlerError.js";
-  
+
   /**
    * Structured HTTP error for use in HttpHandler.
    * Includes an HTTP status code.
@@ -17,4 +17,13 @@
       /** HTTP status code associated with the error */
       this.statusCode = statusCode;
     }
+
+          /**
+   * Clones this error with a new cause.
+   *
+   * @param {*} cause - The underlying cause of the error.
+   */
+  clone(cause) {
+    return new HttpError(this.statusCode, this.message, this.path, cause);
+  } 
   }
