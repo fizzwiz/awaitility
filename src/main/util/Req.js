@@ -1,4 +1,5 @@
 import { Res } from './Res.js';
+import { Path } from './Path.js';
 
 /**
  * Utility class for normalizing and preparing HTTP request data across frameworks.
@@ -66,7 +67,7 @@ export class Req {
     if (!req.token) req.token = this.getToken(req, tokenNames);
     return !!req.token;
   }
-  
+
   /**
    * Ensure that the request has a parsed `URL` object attached.
    *
