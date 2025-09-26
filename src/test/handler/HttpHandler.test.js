@@ -4,133 +4,6 @@ import { Handler } from "../../main/core/Handler.js";
 import { HttpHandler} from "../../main/handler/HttpHandler.js";
 import { HttpError } from "../../main/error/HttpError.js";
 
-describe("Handler", () => {
-
-  it("should execute a pre-check and pass context if valid", async () => {
-    const ctx = { user: { password: "1234" } };
-    const handler = Handler.as().checking(
-      "user.password",
-      async v => !!v,
-      new Error('pre-check failed for user.password')
-    );
-    const result = await handler(ctx);
-    assert.deepEqual(result, ctx);
-  });
-
-  it("should throw an error if pre-check fails", async () => {
-    const ctx = { user: { password: "" } };
-    const handler = Handler.as().checking(
-      "user.password",
-      async v => v && v.length > 0,
-      new Error('pre-check failed for user.password')
-    );
-
-    let caught = null;
-    try {
-      await handler(ctx);
-    } catch (err) {
-      caught = err;
-    }
-
-    assert.ok(caught instanceof Error);
-    assert.equal(caught.message, "pre-check failed for user.password");
-  });
-
-  it("should execute a post-check and pass context if valid", async () => {
-    const ctx = { user: { password: "abcd" } };
-    const handler = Handler.as().check(
-      "user.password",
-      async v => !!v,
-      new Error('post-check failed for user.password')
-    );
-    const result = await handler(ctx);
-    assert.deepEqual(result, ctx);
-  });
-
-  it("should throw an error if post-check fails", async () => {
-    const ctx = { user: { password: "" } };
-    const handler = Handler.as().check(
-      "user.password",
-      async v => v && v.length > 0,
-      new Error('post-check failed for user.password')
-    );
-
-    let caught = null;
-    try {
-      await handler(ctx);
-    } catch (err) {
-      caught = err;
-    }
-
-    assert.ok(caught instanceof Error);
-    assert.equal(caught.message, "post-check failed for user.password");
-  });
-
-  it("should set a property before execution", async () => {
-    const ctx = { user: {} };
-    const handler = Handler.as().setting(
-      "user.name",
-      "Alice",
-      true,
-      new Error('setting failed for user.name')
-    );
-    const result = await handler(ctx);
-    assert.equal(result.user.name, "Alice");
-  });
-
-  it("should throw if pre-set value resolves to undefined", async () => {
-    const ctx = { user: {} };
-    const handler = Handler.as().setting(
-      "user.name",
-      () => undefined,
-      true,
-      new Error('setting failed for user.name')
-    );
-
-    let caught = null;
-    try {
-      await handler(ctx);
-    } catch (err) {
-      caught = err;
-    }
-
-    assert.ok(caught instanceof Error);
-    assert.equal(caught.message, "setting failed for user.name");
-  });
-
-  it("should navigate nested context with with() and without()", async () => {
-    const ctx = {};
-    const handler = Handler.as()
-      .with("user.profile", true, new Error('path not found'))
-      .set("name", "Charlie", true, new Error('set failed'))
-      .without();
-
-    const result = await handler(ctx);
-    assert.deepEqual(result.user.profile, { name: "Charlie" });
-    assert.equal(result[handler.metaCtx]?.length, undefined);
-  });
-
-  it("should throw if with() fails and creating=false", async () => {
-    const ctx = {};
-    const handler = Handler.as().with(
-      "user.profile",
-      false,
-      new Error('path missing')
-    );
-
-    let caught = null;
-    try {
-      await handler(ctx);
-    } catch (err) {
-      caught = err;
-    }
-
-    assert.ok(caught instanceof Error);
-    assert.equal(caught.message, "path missing");
-  });
-
-});
-
 describe("HttpHandler", () => {
 
   it("should prepare the request body successfully", async () => {
@@ -223,4 +96,68 @@ describe("HttpHandler", () => {
     assert.equal(result[handler.metaCtx]?.length, undefined);
   });
 
+  it("should throw if method is invalid", async () => {
+    const ctx = { req: { method: "GET" } };
+    const handler = HttpHandler.as().checkingMethod("POST");
+  
+    let caught = null;
+    try {
+      await handler(ctx);
+    } catch (err) {
+      caught = err;
+    }
+  
+    assert.ok(caught instanceof Error);
+    assert.equal(caught.message, "Invalid HTTP method");
+  });
+  
+  it("should throw if content-type is invalid", async () => {
+    const ctx = { req: { headers: { "content-type": "text/plain" } } };
+    const handler = HttpHandler.as().checkingContentType("application/json");
+  
+    let caught = null;
+    try {
+      await handler(ctx);
+    } catch (err) {
+      caught = err;
+    }
+  
+    assert.ok(caught instanceof Error);
+    assert.equal(caught.message, "Invalid Content-Type");
+  });
+  
+  it("should throw if Accept header is invalid", async () => {
+    const ctx = { req: { headers: { accept: "text/html" } } };
+    const handler = HttpHandler.as().checkingAccept("application/json");
+  
+    let caught = null;
+    try {
+      await handler(ctx);
+    } catch (err) {
+      caught = err;
+    }
+  
+    assert.ok(caught instanceof Error);
+    assert.equal(caught.message, "Not Acceptable");
+  });
+  
+  it("should pass if method, content-type, and accept are valid", async () => {
+    const ctx = {
+      req: {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          accept: "application/json",
+        },
+      },
+    };
+    const handler = HttpHandler.as()
+      .checkingMethod("POST")
+      .checkingContentType("application/json")
+      .checkingAccept("application/json");
+  
+    const result = await handler(ctx);
+    assert.deepEqual(result, ctx);
+  });
+  
 });
