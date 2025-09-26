@@ -33,6 +33,16 @@ export class HttpHandler extends Handler {
     return this.check("req", async req => await Req.prepareBody(req), error);
   }
 
+  /** Pre-execution req.URL preparation */
+  preparingURL(error = new HttpError(400, "invalid or malformed request URL")) {
+    return this.checking("req", Req.prepareURL, error);
+  }
+
+  /** Post-execution req.URL preparation */
+  prepareURL(error = new HttpError(400, "invalid or malformed request URL")) {
+    return this.check("req", Req.prepareURL, error);
+  }
+
   /** Pre-execution query preparation (always succeeds) */
   preparingQuery() {
     return this.checking("req", req => Req.prepareQuery(req));

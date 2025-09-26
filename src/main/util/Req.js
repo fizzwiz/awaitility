@@ -67,6 +67,38 @@ export class Req {
     return !!req.token;
   }
 
+/**
+ * Ensure that the request has a parsed URL object attached.
+ *
+ * If the request does not already have a `req.URL` property,
+ * this method will parse `req.url` into a `URL` object and
+ * attach it. Subsequent calls will reuse the cached object.
+ *
+ * @param req  The Node.js HTTP request object.
+ * @return true if the request now has a `req.URL` property.
+ */
+static prepareURL(req) {
+  if (!req.URL) req.URL = this.getURL(req);
+  return !!req.URL;
+}
+
+/**
+ * Parse the raw request URL into a `URL` object.
+ *
+ * Since Node's `req.url` contains only the path and query,
+ * this method prepends a base (from the Host header, or
+ * `localhost` if missing) so that `new URL()` can parse it.
+ *
+ * @param req  The Node.js HTTP request object.
+ * @return A `URL` object representing the request URL.
+ */
+static getURL(req) {
+  const base = `http://${req.headers.host || 'localhost'}`;
+  const url = new URL(req.url, base);
+  return url;
+}
+
+
   /**
    * Parses the request body.
    * Supports JSON, URL-encoded forms, and raw text.

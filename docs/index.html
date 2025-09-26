@@ -49,8 +49,7 @@
 </blockquote>
 <hr>
 <h2>🌐 Overview</h2>
-<p><code>@fizzwiz/awaitility</code> provides <strong>chainable, context-aware handlers</strong> for general data, DOM manipulation, and HTTP workflows.
-It simplifies <strong>asynchronous operations</strong>, <strong>nested context navigation</strong>, and <strong>error handling</strong>, offering a clean, fluent API.</p>
+<p><code>@fizzwiz/awaitility</code> provides <strong>chainable, context-aware handlers</strong> for general data, DOM manipulation, and HTTP workflows. It simplifies <strong>asynchronous operations</strong>, <strong>nested context navigation</strong>, and <strong>error handling</strong>, offering a clean, fluent API.</p>
 <p>Business logic remains in focus: main operations are expressed as top-level code, while <strong>errors are thrown</strong> and can be handled via <code>.else()</code>.</p>
 <hr>
 <h2>⚡ Features</h2>
@@ -75,22 +74,17 @@ const data = { user: { name: &quot;Alice&quot;, age: 25 } };
 
 // Main business logic: declared first
 const business = ctx => {
-  // some computation
   ctx.user.age += 1;
   return ctx;
 };
 
-// Decorate the main business logic with checks and error handlings
+// Decorate the main business logic with checks and error handling
 const h = Handler.as(business)
-  // Pre-execution check: happens BEFORE the business logic runs
-  .checking(&quot;user.age&quot;)     // throws if the property is not defined
+  .checking(&quot;user.age&quot;)     // Pre-execution check: throws if property not defined
   .else((ctx, err) => console.error(&quot;❌ Error caught:&quot;, err));
 
-// The handler is just an asynchronous function
 const result = await h(data);
-
-console.log(&quot;✅ Updated context:&quot;, result); // Output: { name: &quot;Alice&quot;, age: 26 }
-
+console.log(&quot;✅ Updated context:&quot;, result); // { name: &quot;Alice&quot;, age: 26 }
 </code></pre>
 <hr>
 <h3>🌳 DomHandler</h3>
@@ -98,53 +92,40 @@ console.log(&quot;✅ Updated context:&quot;, result); // Output: { name: &quot;
 import { DomHandler } from &quot;@fizzwiz/awaitility&quot;;
 
 const business = async ctx => {
-  // main computation with DOM context
   console.log(&quot;💻 Business logic running on&quot;, ctx);
   return ctx;
 };
 
-const validator = html => html.includes(&quot;snippet&quot;); // example validator
+const validator = html => html.includes(&quot;snippet&quot;);
 
 const h = DomHandler.as(business)
-  // pre-execution setting: fetch HTML and set it to body.innerHTML
   .setting(&quot;body.innerHTML&quot;, async () => fetch(&quot;/snippet.html&quot;).then(r => r.text()))
-  // post-execution check: verify the content
   .check(&quot;body.innerHTML&quot;, validator)
-  // centralized error handling
   .else((ctx, err) => console.error(&quot;❌ Error caught:&quot;, err));
 
 await h(document);
-
 &lt;/script>
 </code></pre>
 <hr>
 <h3>📡 HttpHandler</h3>
 <pre class="prettyprint source lang-js"><code>import { HttpHandler, Res } from &quot;@fizzwiz/awaitility&quot;;
 
-// Main computation
 const business = async ctx => {
   console.log(&quot;💻 Business logic running with HTTP context:&quot;, ctx.req);
   return ctx;
 };
 
-// Validator for the token
 const validator = token => typeof token === &quot;string&quot; && token.length > 0;
 
 const h = HttpHandler.as(business)
-  // pre-execution: ensure req.token is prepared (by extractin the token from the cookies, for example)
   .preparingToken()
-  // post-execution: validate token
   .check(&quot;req.token&quot;, validator)
-  // centralized error handling
   .else((ctx, err) => {
     console.error(&quot;❌ Error caught:&quot;, err);
-    // Optionally send JSON response
     Res.json(ctx.res, 401, { error: err.message });
   });
 
-// Run the handler with HTTP context
 await h({ req, res });
-
 </code></pre>
 <hr>
 <h2>📚 API Reference</h2>
@@ -159,19 +140,18 @@ await h({ req, res });
 <ul>
 <li>Extends <code>Handler</code>.</li>
 <li><code>with(selector, isQuery?, creating?, error?)</code> – Navigate DOM element by CSS selector.</li>
-<li><code>setting/setAttr(attr, value, error?)</code> – Set attribute.</li>
-<li><code>checking/checktAttr(attr, value, error?)</code> – Check attribute.</li>
+<li><code>setting/setAttr(attr, value, error?)</code> – Set attribute (pre/post execution).</li>
+<li><code>checking/checkAttr(attr, validator?, error?)</code> – Check attribute (pre/post execution).</li>
 </ul>
 <h3>📡 HttpHandler</h3>
 <ul>
 <li>Extends <code>Handler</code>.</li>
-<li><code>preparing/prepareBody()</code>, <code>preparing/prepareQuery()</code>, <code>preparing/prepareCookies()</code>, <code>preparing/prepareToken()</code></li>
-<li>Errors are <strong>thrown</strong> and can be caught with <code>.else()</code> for selective recovery.</li>
+<li><code>preparing/prepareURL()</code> <code>preparing/prepareBody()</code>, <code>preparing/prepareQuery()</code>, <code>preparing/prepareCookies()</code>, <code>preparing/prepareToken()</code></li>
+<li>Errors are <strong>thrown</strong> and can be caught with <code>.else()</code>.</li>
 </ul>
 <hr>
 <h2>🤝 Contributing</h2>
-<p>Contributions, bug reports, and feature requests are welcome!
-Please open issues or pull requests on the <a href="https://github.com/fizzwiz/awaitility">GitHub repository</a>.</p>
+<p>Contributions, bug reports, and feature requests are welcome! Open issues or pull requests on <a href="https://github.com/fizzwiz/awaitility">GitHub</a>.</p>
 <hr>
 <h2>📝 License</h2>
 <p>MIT © 2025 Fizzwiz</p></article>
@@ -191,7 +171,7 @@ Please open issues or pull requests on the <a href="https://github.com/fizzwiz/a
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Sep 25 2025 18:34:50 GMT+0200 (Ora legale dell’Europa centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Sep 26 2025 07:46:49 GMT+0200 (Ora legale dell’Europa centrale)
 </footer>
 
 <script> prettyPrint(); </script>
