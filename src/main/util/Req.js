@@ -66,37 +66,48 @@ export class Req {
     if (!req.token) req.token = this.getToken(req, tokenNames);
     return !!req.token;
   }
+  
+  /**
+   * Ensure that the request has a parsed `URL` object attached.
+   *
+   * If the request does not already have a `req.URL` property, this method:
+   *  1. Calls `getURL(req)` to parse `req.url` into a `URL` object.
+   *  2. Normalizes the pathname of the URL.
+   *  3. Attaches the resulting `URL` object to `req.URL`.
+   *
+   * Subsequent calls will reuse the cached `req.URL` object.
+   *
+   * @param req  The Node.js HTTP request object.
+   * @return true if the request now has a `req.URL` property.
+   */
+  static prepareURL(req) {
+    if (!req.URL) req.URL = this.getURL(req);
+    return !!req.URL;
+  }
+
 
 /**
- * Ensure that the request has a parsed URL object attached.
+ * Parse the raw request URL into a `URL` object and normalize its pathname.
  *
- * If the request does not already have a `req.URL` property,
- * this method will parse `req.url` into a `URL` object and
- * attach it. Subsequent calls will reuse the cached object.
+ * Node's `req.url` contains only the path and query string. This method:
+ *  1. Prepends a base (from the Host header, or `localhost` if missing)
+ *     so that `new URL()` can parse it.
+ *  2. Normalizes the resulting pathname using `Path.normalize` to
+ *     collapse duplicate slashes, remove `.` / `..` segments, and
+ *     standardize trailing slashes.
  *
- * @param req  The Node.js HTTP request object.
- * @return true if the request now has a `req.URL` property.
- */
-static prepareURL(req) {
-  if (!req.URL) req.URL = this.getURL(req);
-  return !!req.URL;
-}
-
-/**
- * Parse the raw request URL into a `URL` object.
- *
- * Since Node's `req.url` contains only the path and query,
- * this method prepends a base (from the Host header, or
- * `localhost` if missing) so that `new URL()` can parse it.
+ * The query string (`?foo=bar`) and other URL components remain intact.
  *
  * @param req  The Node.js HTTP request object.
- * @return A `URL` object representing the request URL.
+ * @return A `URL` object representing the request URL, with a normalized pathname.
  */
 static getURL(req) {
   const base = `http://${req.headers.host || 'localhost'}`;
   const url = new URL(req.url, base);
+  url.pathname = Path.normalize(url.pathname);
   return url;
 }
+
 
 
   /**
